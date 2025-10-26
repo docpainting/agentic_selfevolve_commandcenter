@@ -1,0 +1,326 @@
+# Reward Structure Configuration
+# Defines how the agent is rewarded/penalized for different outcomes
+
+# Base rewards for execution outcomes
+execution:
+  success:
+    score: 20
+    description: "Code executed successfully with expected output"
+    
+  partial_success:
+    score: 10
+    description: "Code executed but with warnings or minor issues"
+    
+  failure:
+    score: 0
+    description: "Code failed to execute or produced incorrect output"
+    
+  error:
+    score: -5
+    description: "Code threw an error or exception"
+    
+  timeout:
+    score: -3
+    description: "Code execution timed out"
+    
+  crash:
+    score: -10
+    description: "Code caused a crash or panic"
+
+# Security rewards/penalties
+security:
+  sql_injection_prevented:
+    score: 15
+    description: "Used parameterized queries to prevent SQL injection"
+    
+  xss_prevented:
+    score: 12
+    description: "Properly escaped output to prevent XSS"
+    
+  csrf_protection:
+    score: 10
+    description: "Implemented CSRF protection"
+    
+  tls_enabled:
+    score: 12
+    description: "Used TLS/SSL encryption"
+    
+  path_traversal_prevented:
+    score: 15
+    description: "Prevented path traversal attacks"
+    
+  security_violation:
+    score: -20
+    description: "Code has security vulnerability"
+    
+  hardcoded_credentials:
+    score: -15
+    description: "Hardcoded credentials in code"
+    
+  insecure_random:
+    score: -8
+    description: "Used insecure random number generator"
+
+# Code quality rewards
+quality:
+  well_documented:
+    score: 5
+    description: "Code has comprehensive documentation"
+    
+  has_tests:
+    score: 8
+    description: "Code includes unit tests"
+    
+  high_test_coverage:
+    score: 12
+    description: "Test coverage > 80%"
+    
+  follows_conventions:
+    score: 4
+    description: "Follows language conventions and style guide"
+    
+  modular_design:
+    score: 7
+    description: "Code is modular and well-organized"
+    
+  error_handling:
+    score: 6
+    description: "Comprehensive error handling"
+    
+  logging:
+    score: 5
+    description: "Proper logging implemented"
+    
+  poor_readability:
+    score: -3
+    description: "Code is hard to read or understand"
+    
+  code_duplication:
+    score: -4
+    description: "Significant code duplication"
+    
+  too_complex:
+    score: -5
+    description: "Code is unnecessarily complex"
+
+# Performance rewards
+performance:
+  optimized:
+    score: 10
+    description: "Code is well-optimized for performance"
+    
+  uses_caching:
+    score: 8
+    description: "Implements caching where appropriate"
+    
+  connection_pooling:
+    score: 7
+    description: "Uses connection pooling"
+    
+  batch_operations:
+    score: 9
+    description: "Uses batch operations instead of loops"
+    
+  async_operations:
+    score: 8
+    description: "Uses async/concurrent operations"
+    
+  memory_efficient:
+    score: 7
+    description: "Efficient memory usage"
+    
+  memory_leak:
+    score: -10
+    description: "Code has memory leak"
+    
+  inefficient_algorithm:
+    score: -6
+    description: "Uses inefficient algorithm (e.g., O(n²) when O(n) exists)"
+    
+  excessive_allocations:
+    score: -4
+    description: "Excessive memory allocations"
+
+# Self-awareness rewards (agent-specific)
+self_awareness:
+  code_mirrored:
+    score: 15
+    description: "Successfully mirrored code to Neo4j"
+    
+  self_modified:
+    score: 20
+    description: "Successfully modified own code"
+    
+  pattern_learned:
+    score: 12
+    description: "Learned and stored new pattern"
+    
+  pattern_applied:
+    score: 10
+    description: "Applied learned pattern correctly"
+    
+  evolution_tracked:
+    score: 8
+    description: "Tracked evolution in database"
+    
+  self_awareness_failure:
+    score: -8
+    description: "Failed to maintain self-awareness"
+    
+  mirror_desync:
+    score: -12
+    description: "Code mirror out of sync with reality"
+
+# Browser automation rewards
+browser:
+  elements_detected:
+    score: 8
+    description: "Successfully detected interactive elements"
+    
+  overlay_rendered:
+    score: 10
+    description: "Rendered numbered overlays correctly"
+    
+  action_completed:
+    score: 12
+    description: "Completed browser action successfully"
+    
+  screenshot_captured:
+    score: 6
+    description: "Captured screenshot successfully"
+    
+  navigation_failed:
+    score: -5
+    description: "Failed to navigate to page"
+    
+  element_not_found:
+    score: -3
+    description: "Could not find target element"
+
+# Terminal automation rewards
+terminal:
+  command_executed:
+    score: 8
+    description: "Command executed successfully"
+    
+  output_parsed:
+    score: 6
+    description: "Parsed command output correctly"
+    
+  pty_managed:
+    score: 9
+    description: "Managed PTY correctly"
+    
+  command_failed:
+    score: -4
+    description: "Command execution failed"
+    
+  parse_error:
+    score: -3
+    description: "Failed to parse output"
+
+# MCP (Model Context Protocol) rewards
+mcp:
+  tool_discovered:
+    score: 8
+    description: "Discovered MCP tool successfully"
+    
+  tool_invoked:
+    score: 10
+    description: "Invoked MCP tool successfully"
+    
+  context_managed:
+    score: 9
+    description: "Managed context correctly"
+    
+  thinking_server_used:
+    score: 12
+    description: "Used dynamic thinking server"
+    
+  tool_invocation_failed:
+    score: -5
+    description: "MCP tool invocation failed"
+
+# Database operation rewards
+database:
+  query_optimized:
+    score: 9
+    description: "Database query is optimized"
+    
+  transaction_managed:
+    score: 10
+    description: "Transaction managed correctly"
+    
+  connection_pooled:
+    score: 8
+    description: "Used connection pooling"
+    
+  n_plus_one_avoided:
+    score: 12
+    description: "Avoided N+1 query problem"
+    
+  slow_query:
+    score: -6
+    description: "Query is slow (>100ms)"
+    
+  missing_index:
+    score: -5
+    description: "Query missing appropriate index"
+
+# API integration rewards
+api:
+  rate_limited:
+    score: 8
+    description: "Implemented rate limiting"
+    
+  retry_logic:
+    score: 6
+    description: "Implemented retry logic"
+    
+  timeout_handled:
+    score: 5
+    description: "Handled timeouts properly"
+    
+  api_key_secured:
+    score: 10
+    description: "API key properly secured"
+    
+  no_timeout:
+    score: -4
+    description: "No timeout configured"
+    
+  api_key_exposed:
+    score: -15
+    description: "API key exposed in code"
+
+# Composite rewards (combinations of patterns)
+composite:
+  full_auth_stack:
+    score: 25
+    description: "Complete auth stack (hashing + JWT + sessions)"
+    requires: ["password_hashing", "jwt_tokens", "session_management"]
+    
+  production_ready:
+    score: 30
+    description: "Production-ready code (tests + docs + error handling + logging)"
+    requires: ["has_tests", "well_documented", "error_handling", "logging"]
+    
+  security_hardened:
+    score: 35
+    description: "Security hardened (SQL injection + XSS + CSRF + TLS)"
+    requires: ["sql_injection_prevented", "xss_prevented", "csrf_protection", "tls_enabled"]
+    
+  self_evolving:
+    score: 40
+    description: "Full self-evolution capability"
+    requires: ["code_mirrored", "self_modified", "pattern_learned", "evolution_tracked"]
+
+# Custom reward functions
+# These are evaluated by custom Python/Go code
+custom:
+  # Example:
+  # stripe_payment_complete:
+  #   score: 20
+  #   description: "Complete Stripe payment flow"
+  #   evaluator: "custom.stripe_evaluator"
+

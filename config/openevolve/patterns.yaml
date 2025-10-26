@@ -1,0 +1,243 @@
+# Pattern Detection Configuration
+# Defines patterns the agent should detect and learn from
+
+# Authentication patterns
+authentication:
+  - name: "password_hashing"
+    description: "Proper password hashing (bcrypt, argon2, scrypt)"
+    keywords: ["bcrypt", "argon2", "scrypt", "hash", "password"]
+    reward: 10
+    severity: "high"
+    
+  - name: "jwt_tokens"
+    description: "JWT token generation and validation"
+    keywords: ["jwt", "token", "sign", "verify"]
+    reward: 8
+    severity: "medium"
+    
+  - name: "session_management"
+    description: "Secure session management"
+    keywords: ["session", "cookie", "secure", "httponly"]
+    reward: 7
+    severity: "medium"
+    
+  - name: "oauth_integration"
+    description: "OAuth 2.0 integration"
+    keywords: ["oauth", "authorize", "access_token", "refresh_token"]
+    reward: 12
+    severity: "high"
+
+# API call patterns
+api_calls:
+  - name: "rate_limiting"
+    description: "Rate limiting implementation"
+    keywords: ["rate", "limit", "throttle", "429"]
+    reward: 8
+    severity: "medium"
+    
+  - name: "retry_logic"
+    description: "Exponential backoff retry logic"
+    keywords: ["retry", "backoff", "exponential", "jitter"]
+    reward: 6
+    severity: "low"
+    
+  - name: "timeout_handling"
+    description: "Proper timeout handling"
+    keywords: ["timeout", "context", "deadline", "cancel"]
+    reward: 5
+    severity: "low"
+    
+  - name: "error_handling"
+    description: "Comprehensive error handling"
+    keywords: ["error", "exception", "try", "catch", "recover"]
+    reward: 7
+    severity: "medium"
+
+# Database query patterns
+database:
+  - name: "sql_injection_prevention"
+    description: "SQL injection prevention (parameterized queries)"
+    keywords: ["prepare", "parameter", "bind", "placeholder", "$1"]
+    reward: 15
+    severity: "critical"
+    
+  - name: "connection_pooling"
+    description: "Database connection pooling"
+    keywords: ["pool", "connection", "acquire", "release"]
+    reward: 8
+    severity: "medium"
+    
+  - name: "transaction_management"
+    description: "Proper transaction management"
+    keywords: ["begin", "commit", "rollback", "transaction"]
+    reward: 10
+    severity: "high"
+    
+  - name: "query_optimization"
+    description: "Optimized database queries"
+    keywords: ["index", "explain", "optimize", "batch"]
+    reward: 9
+    severity: "medium"
+
+# File operation patterns
+file_operations:
+  - name: "path_traversal_prevention"
+    description: "Path traversal attack prevention"
+    keywords: ["filepath.Clean", "path.Join", "sanitize", "validate"]
+    reward: 12
+    severity: "high"
+    
+  - name: "proper_file_closing"
+    description: "Proper file closing (defer, context managers)"
+    keywords: ["defer", "close", "with", "finally"]
+    reward: 5
+    severity: "low"
+    
+  - name: "atomic_writes"
+    description: "Atomic file writes"
+    keywords: ["atomic", "temp", "rename", "fsync"]
+    reward: 8
+    severity: "medium"
+
+# Network operation patterns
+network:
+  - name: "tls_encryption"
+    description: "TLS/SSL encryption"
+    keywords: ["tls", "ssl", "https", "certificate"]
+    reward: 12
+    severity: "high"
+    
+  - name: "input_validation"
+    description: "Input validation and sanitization"
+    keywords: ["validate", "sanitize", "whitelist", "regex"]
+    reward: 10
+    severity: "high"
+    
+  - name: "cors_configuration"
+    description: "Proper CORS configuration"
+    keywords: ["cors", "origin", "credentials", "headers"]
+    reward: 7
+    severity: "medium"
+
+# Code quality patterns
+code_quality:
+  - name: "logging"
+    description: "Comprehensive logging"
+    keywords: ["log", "logger", "debug", "info", "error"]
+    reward: 5
+    severity: "low"
+    
+  - name: "metrics"
+    description: "Metrics and monitoring"
+    keywords: ["metric", "counter", "gauge", "histogram"]
+    reward: 6
+    severity: "low"
+    
+  - name: "testing"
+    description: "Unit tests and test coverage"
+    keywords: ["test", "assert", "mock", "coverage"]
+    reward: 8
+    severity: "medium"
+    
+  - name: "documentation"
+    description: "Code documentation"
+    keywords: ["doc", "comment", "godoc", "docstring"]
+    reward: 4
+    severity: "low"
+
+# Self-awareness patterns (agent-specific)
+self_awareness:
+  - name: "code_mirror"
+    description: "Code mirroring to Neo4j"
+    keywords: ["neo4j", "mirror", "graph", "reflect"]
+    reward: 15
+    severity: "high"
+    
+  - name: "self_modification"
+    description: "Self-modification capability"
+    keywords: ["rewrite", "evolve", "modify", "improve"]
+    reward: 20
+    severity: "critical"
+    
+  - name: "pattern_learning"
+    description: "Learning from patterns"
+    keywords: ["learn", "pattern", "store", "recall"]
+    reward: 12
+    severity: "high"
+    
+  - name: "evolution_tracking"
+    description: "Tracking evolution history"
+    keywords: ["evolution", "generation", "fitness", "score"]
+    reward: 10
+    severity: "medium"
+
+# Browser automation patterns
+browser:
+  - name: "element_detection"
+    description: "Interactive element detection"
+    keywords: ["chromedp", "selector", "element", "click"]
+    reward: 8
+    severity: "medium"
+    
+  - name: "overlay_rendering"
+    description: "Numbered overlay rendering"
+    keywords: ["overlay", "canvas", "number", "highlight"]
+    reward: 10
+    severity: "medium"
+    
+  - name: "screenshot_capture"
+    description: "Screenshot capture and analysis"
+    keywords: ["screenshot", "capture", "image", "visual"]
+    reward: 7
+    severity: "low"
+
+# Terminal automation patterns
+terminal:
+  - name: "pty_management"
+    description: "PTY (pseudo-terminal) management"
+    keywords: ["pty", "terminal", "shell", "exec"]
+    reward: 9
+    severity: "medium"
+    
+  - name: "command_execution"
+    description: "Safe command execution"
+    keywords: ["exec", "command", "run", "output"]
+    reward: 7
+    severity: "medium"
+    
+  - name: "output_parsing"
+    description: "Command output parsing"
+    keywords: ["parse", "output", "stdout", "stderr"]
+    reward: 6
+    severity: "low"
+
+# MCP (Model Context Protocol) patterns
+mcp:
+  - name: "tool_discovery"
+    description: "MCP tool discovery"
+    keywords: ["mcp", "tool", "discover", "list"]
+    reward: 8
+    severity: "medium"
+    
+  - name: "dynamic_thinking"
+    description: "Dynamic thinking server"
+    keywords: ["thinking", "reasoning", "plan", "execute"]
+    reward: 12
+    severity: "high"
+    
+  - name: "context_management"
+    description: "Context management"
+    keywords: ["context", "state", "memory", "persist"]
+    reward: 9
+    severity: "medium"
+
+# Custom pattern definitions
+# Add your own patterns here following the same structure
+custom:
+  # Example:
+  # - name: "stripe_payment"
+  #   description: "Stripe payment integration"
+  #   keywords: ["stripe", "payment", "charge", "customer"]
+  #   reward: 15
+  #   severity: "high"
+

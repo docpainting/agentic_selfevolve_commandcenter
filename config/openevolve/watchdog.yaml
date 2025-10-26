@@ -1,0 +1,254 @@
+# Watchdog Monitoring Configuration
+# Controls when and how the agent alerts on code quality and security issues
+
+# General watchdog settings
+enabled: true                         # Enable watchdog monitoring
+check_interval: 5                     # Check every 5 seconds
+alert_cooldown: 60                    # Minimum 60s between duplicate alerts
+
+# Alert severity levels
+severity_levels:
+  critical:
+    threshold: 0.0                    # Alert immediately
+    notify: true                      # Send notifications
+    block_execution: true             # Block code execution
+    color: "#FF0000"                  # Red
+    
+  high:
+    threshold: 0.3                    # Alert if score < 0.3
+    notify: true                      # Send notifications
+    block_execution: false            # Don't block execution
+    color: "#FF6B00"                  # Orange
+    
+  medium:
+    threshold: 0.5                    # Alert if score < 0.5
+    notify: true                      # Send notifications
+    block_execution: false            # Don't block execution
+    color: "#FFD700"                  # Yellow
+    
+  low:
+    threshold: 0.7                    # Alert if score < 0.7
+    notify: false                     # Don't send notifications
+    block_execution: false            # Don't block execution
+    color: "#00BFFF"                  # Cyan
+    
+  info:
+    threshold: 1.0                    # Always log
+    notify: false                     # Don't send notifications
+    block_execution: false            # Don't block execution
+    color: "#00FF00"                  # Green
+
+# Security checks
+security:
+  enabled: true                       # Enable security checks
+  
+  checks:
+    sql_injection:
+      enabled: true
+      severity: "critical"
+      patterns:
+        - "SELECT.*FROM.*WHERE.*="    # Potential SQL injection
+        - "INSERT.*VALUES.*\\+"       # String concatenation in SQL
+        - "UPDATE.*SET.*\\+"          # String concatenation in SQL
+      
+    xss:
+      enabled: true
+      severity: "high"
+      patterns:
+        - "innerHTML.*="              # Direct HTML injection
+        - "document\\.write"          # Unsafe DOM manipulation
+        - "eval\\("                   # Code evaluation
+      
+    path_traversal:
+      enabled: true
+      severity: "critical"
+      patterns:
+        - "\\.\\.\\/\\.\\.\\/"        # Directory traversal
+        - "os\\.path\\.join.*\\.\\."  # Unsafe path joining
+      
+    hardcoded_secrets:
+      enabled: true
+      severity: "critical"
+      patterns:
+        - "password\\s*=\\s*[\"']"    # Hardcoded password
+        - "api_key\\s*=\\s*[\"']"     # Hardcoded API key
+        - "secret\\s*=\\s*[\"']"      # Hardcoded secret
+        - "token\\s*=\\s*[\"']"       # Hardcoded token
+      
+    insecure_random:
+      enabled: true
+      severity: "medium"
+      patterns:
+        - "math\\.random"             # Insecure random (JavaScript)
+        - "rand\\.Seed"               # Insecure random (Go)
+      
+    command_injection:
+      enabled: true
+      severity: "critical"
+      patterns:
+        - "exec\\(.*\\+.*\\)"         # Command injection
+        - "system\\(.*\\+.*\\)"       # System command injection
+        - "shell_exec"                # Shell execution
+
+# Code quality checks
+quality:
+  enabled: true                       # Enable quality checks
+  
+  checks:
+    complexity:
+      enabled: true
+      severity: "medium"
+      max_cyclomatic_complexity: 15   # Maximum cyclomatic complexity
+      max_function_length: 100        # Maximum function length (lines)
+      max_file_length: 500            # Maximum file length (lines)
+      
+    duplication:
+      enabled: true
+      severity: "low"
+      max_duplication_percentage: 10  # Maximum code duplication (%)
+      min_duplicate_lines: 6          # Minimum lines to consider duplicate
+      
+    documentation:
+      enabled: true
+      severity: "low"
+      require_function_docs: true     # Require function documentation
+      require_class_docs: true        # Require class documentation
+      min_comment_ratio: 0.1          # Minimum comment ratio (10%)
+      
+    naming:
+      enabled: true
+      severity: "low"
+      min_variable_length: 2          # Minimum variable name length
+      max_variable_length: 50         # Maximum variable name length
+      require_descriptive_names: true # Require descriptive names
+      
+    error_handling:
+      enabled: true
+      severity: "medium"
+      require_error_checks: true      # Require error checking
+      disallow_bare_except: true      # Disallow bare except clauses
+      
+    testing:
+      enabled: true
+      severity: "low"
+      min_test_coverage: 0.6          # Minimum test coverage (60%)
+      require_unit_tests: true        # Require unit tests
+
+# Performance checks
+performance:
+  enabled: true                       # Enable performance checks
+  
+  checks:
+    slow_queries:
+      enabled: true
+      severity: "medium"
+      max_query_time_ms: 100          # Maximum query time (ms)
+      
+    memory_usage:
+      enabled: true
+      severity: "high"
+      max_memory_mb: 512              # Maximum memory usage (MB)
+      
+    cpu_usage:
+      enabled: true
+      severity: "medium"
+      max_cpu_percent: 80             # Maximum CPU usage (%)
+      
+    response_time:
+      enabled: true
+      severity: "medium"
+      max_response_time_ms: 200       # Maximum response time (ms)
+      
+    n_plus_one:
+      enabled: true
+      severity: "high"
+      detect_n_plus_one: true         # Detect N+1 query problem
+
+# Self-awareness checks (agent-specific)
+self_awareness:
+  enabled: true                       # Enable self-awareness checks
+  
+  checks:
+    mirror_sync:
+      enabled: true
+      severity: "high"
+      max_desync_time_s: 30           # Maximum time out of sync (seconds)
+      
+    evolution_tracking:
+      enabled: true
+      severity: "medium"
+      require_evolution_log: true     # Require evolution logging
+      
+    pattern_learning:
+      enabled: true
+      severity: "medium"
+      min_patterns_learned: 5         # Minimum patterns to learn
+      
+    self_modification:
+      enabled: true
+      severity: "critical"
+      require_backup: true            # Require backup before modification
+      require_validation: true        # Require validation after modification
+
+# Alert destinations
+alerts:
+  # Console alerts
+  console:
+    enabled: true
+    min_severity: "low"               # Minimum severity to log
+    
+  # UI alerts (right panel)
+  ui:
+    enabled: true
+    min_severity: "medium"            # Minimum severity to show in UI
+    max_alerts: 100                   # Maximum alerts to keep
+    
+  # File alerts
+  file:
+    enabled: true
+    min_severity: "high"              # Minimum severity to log to file
+    path: "logs/watchdog_alerts.log"  # Alert log file
+    
+  # Webhook alerts (optional)
+  webhook:
+    enabled: false
+    min_severity: "critical"          # Minimum severity to send webhook
+    url: null                         # Webhook URL
+    
+  # Email alerts (optional)
+  email:
+    enabled: false
+    min_severity: "critical"          # Minimum severity to send email
+    to: null                          # Email address
+
+# Metrics collection
+metrics:
+  enabled: true                       # Enable metrics collection
+  
+  collect:
+    - "execution_time"                # Code execution time
+    - "memory_usage"                  # Memory usage
+    - "cpu_usage"                     # CPU usage
+    - "error_rate"                    # Error rate
+    - "success_rate"                  # Success rate
+    - "pattern_matches"               # Pattern matches
+    - "security_violations"           # Security violations
+    - "quality_score"                 # Code quality score
+    - "evolution_score"               # Evolution score
+  
+  aggregation_interval: 60            # Aggregate metrics every 60 seconds
+  retention_days: 30                  # Keep metrics for 30 days
+
+# Custom watchdog rules
+# Add your own rules here
+custom_rules:
+  # Example:
+  # stripe_payment_validation:
+  #   enabled: true
+  #   severity: "high"
+  #   description: "Validate Stripe payment flow"
+  #   checks:
+  #     - "stripe.Charge.create"
+  #     - "stripe.Customer.create"
+  #   min_checks: 2
+

@@ -1,0 +1,166 @@
+# Agentic Self-Evolving Command Center - OpenEvolve Configuration
+# Optimized for Gemma 3 (27B multimodal) via Ollama
+
+# General settings
+max_iterations: 1000                  # Maximum evolution iterations
+checkpoint_interval: 50               # Save checkpoints every 50 iterations
+log_level: "INFO"                     # Logging level
+log_dir: "logs/openevolve"            # Custom log directory
+random_seed: 42                       # Reproducibility seed
+
+# Evolution settings
+diff_based_evolution: true            # Use diff-based evolution (more efficient)
+max_code_length: 15000                # Maximum code length (15KB for complex agent code)
+
+# Early stopping settings
+early_stopping_patience: 30           # Stop after 30 iterations without improvement
+convergence_threshold: 0.01           # Minimum improvement required
+early_stopping_metric: "combined_score"  # Metric to track
+
+# LLM configuration - Gemma 3 via Ollama
+llm:
+  # Models for evolution (using Gemma 3 multimodal)
+  models:
+    - name: "gemma3:27b"              # Primary model for evolution
+      weight: 1.0
+  
+  # Models for evaluation feedback
+  evaluator_models:
+    - name: "gemma3:27b"              # Same model for consistency
+      weight: 1.0
+  
+  # API configuration for Ollama
+  api_base: "http://localhost:11434/v1/"  # Ollama OpenAI-compatible endpoint
+  api_key: "ollama"                   # Dummy key (Ollama doesn't need real key)
+  
+  # Generation parameters (optimized for Gemma 3)
+  temperature: 0.7                    # Balanced creativity
+  top_p: 0.95                         # Nucleus sampling
+  max_tokens: 8192                    # Gemma 3 supports up to 8K context
+  
+  # Request parameters
+  timeout: 120                        # Longer timeout for local model
+  retries: 3                          # Retry on failure
+  retry_delay: 5                      # Delay between retries
+
+# Prompt configuration
+prompt:
+  template_dir: null                  # Use default templates
+  system_message: "You are an expert AI agent that can see and modify your own code. Your goal is to evolve and improve your capabilities through self-modification. Focus on: 1) Better pattern recognition, 2) More efficient code, 3) Improved error handling, 4) Enhanced security."
+  evaluator_system_message: "You are an expert code reviewer evaluating AI agent code. Focus on: correctness, efficiency, security, and self-awareness capabilities."
+  
+  # Number of examples in prompt
+  num_top_programs: 3                 # Top performers
+  num_diverse_programs: 2             # Diverse solutions
+  
+  # Template stochasticity
+  use_template_stochasticity: true    # Random variations for diversity
+  template_variations:
+    improvement_suggestion:
+      - "Here's how we could evolve this code:"
+      - "I suggest the following self-modifications:"
+      - "We can enhance this agent by:"
+      - "To propagate intelligence, let's:"
+  
+  # Artifact rendering
+  include_artifacts: true             # Include execution outputs
+  max_artifact_bytes: 40960           # 40KB for detailed logs
+  artifact_security_filter: true      # Security filtering
+  
+  # Feature extraction thresholds
+  suggest_simplification_after_chars: 800
+  include_changes_under_chars: 150
+  concise_implementation_max_lines: 15
+  comprehensive_implementation_min_lines: 80
+
+# Database configuration
+database:
+  # General settings
+  db_path: "data/openevolve.db"       # Persist evolution history
+  in_memory: true                     # Keep in memory for speed
+  log_prompts: true                   # Log all prompts for analysis
+  
+  # Evolutionary parameters
+  population_size: 500                # Population size (balanced for local LLM)
+  archive_size: 100                   # Elite archive size
+  num_islands: 5                      # Island model for diversity
+  
+  # Island-based evolution
+  migration_interval: 50              # Migrate every 50 generations
+  migration_rate: 0.1                 # Migrate 10% of top programs
+  
+  # Selection parameters
+  elite_selection_ratio: 0.15         # 15% elite selection
+  exploration_ratio: 0.25             # 25% exploration
+  exploitation_ratio: 0.75            # 75% exploitation
+  
+  # Feature map for MAP-Elites (quality-diversity)
+  feature_dimensions:
+    - "complexity"                    # Code complexity (built-in)
+    - "diversity"                     # Structural diversity (built-in)
+  
+  feature_bins: 10                    # 10 bins per dimension
+  diversity_reference_size: 20        # Reference set size
+
+# Evaluator configuration
+evaluator:
+  # General settings
+  timeout: 300                        # 5 minutes max evaluation time
+  max_retries: 3                      # Retry failed evaluations
+  
+  # Evaluation strategies
+  cascade_evaluation: true            # Filter bad solutions early
+  cascade_thresholds:
+    - 0.4                             # First stage (basic correctness)
+    - 0.7                             # Second stage (good quality)
+    - 0.9                             # Third stage (excellent)
+  
+  # Parallel evaluation
+  parallel_evaluations: 2             # 2 parallel evals (local LLM constraint)
+  
+  # LLM-based feedback
+  use_llm_feedback: true              # Use Gemma 3 for code quality feedback
+  llm_feedback_weight: 0.2            # 20% weight for LLM feedback
+
+# Evolution trace configuration (for analysis and learning)
+evolution_trace:
+  enabled: true                       # Enable detailed logging
+  format: 'jsonl'                     # JSONL format for easy parsing
+  include_code: true                  # Include full code in traces
+  include_prompts: true               # Include prompts and responses
+  output_path: "logs/evolution_trace.jsonl"
+  buffer_size: 10                     # Buffer 10 traces before writing
+  compress: false                     # No compression (easier to read)
+
+# Agent-specific settings (custom extensions)
+agent:
+  # Reward system
+  rewards:
+    success: 20                       # Full success reward
+    partial_success: 10               # Partial success reward
+    failure: 0                        # Failure (no reward)
+    error: -5                         # Error penalty
+    security_violation: -20           # Security violation penalty
+  
+  # Pattern detection
+  patterns:
+    detect_auth: true                 # Detect authentication patterns
+    detect_api_calls: true            # Detect API call patterns
+    detect_db_queries: true           # Detect database queries
+    detect_file_ops: true             # Detect file operations
+    detect_network: true              # Detect network operations
+  
+  # Watchdog settings
+  watchdog:
+    enabled: true                     # Enable watchdog monitoring
+    alert_threshold: 0.5              # Alert on scores below 0.5
+    security_checks: true             # Enable security checks
+    code_quality_checks: true         # Enable quality checks
+  
+  # Neo4j integration
+  neo4j:
+    mirror_code: true                 # Mirror code to Neo4j
+    track_evolution: true             # Track evolution history
+    store_patterns: true              # Store learned patterns
+    update_interval: 10               # Update Neo4j every 10 iterations
+
