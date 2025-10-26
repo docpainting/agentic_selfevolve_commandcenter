@@ -1,6 +1,6 @@
 module agent-workspace/backend
 
-go 1.21
+go 1.25
 
 require (
 github.com/MegaGrindStone/go-light-rag v0.1.0

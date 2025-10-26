@@ -4,15 +4,13 @@
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Go](https://img.shields.io/badge/Go-1.25+-00ADD8.svg)
+![Go](https://img.shields.io/badge/Go-1.21+-00ADD8.svg)
 ![React](https://img.shields.io/badge/React-18-61DAFB.svg)
 ![Status](https://img.shields.io/badge/status-production--ready-success.svg)
 
-**A complete IDE/GUI command center with integrated browser and terminal for self-evolving AI agents**
+**A self-evolving AI agent workspace with Gemma 3, EvoAgentX, LightRAG, Neo4j, and a stunning midnight glassmorphism UI**
 
-*Powered by Gemma 3, EvoAgentX, LightRAG, Neo4j, Dynamic MCP, and midnight glassmorphism UI*
-
-[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Documentation](#-documentation)
+[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Documentation](#-documentation) • [Demo](#-demo)
 
 </div>
 
@@ -20,20 +18,21 @@
 
 ## 🌟 Overview
 
-The **Agentic Self-Evolving Command Center** is a production-ready AI agent workspace that goes beyond traditional agent frameworks. This is a **complete IDE/GUI command center** with fully integrated browser and terminal control, enabling agents to autonomously code, browse, test, and evolve - all while maintaining a beautiful midnight glassmorphism interface for human oversight and seamless takeover capabilities.
+The **Agentic Self-Evolving Command Center** is a production-ready AI agent workspace that combines cutting-edge technologies to create an intelligent, self-improving system. It features a beautiful midnight glassmorphism UI, powerful backend orchestration, and advanced memory systems for true agent intelligence.
 
 ### What Makes This Special?
 
-- 🖥️ **Complete IDE/GUI**: Full-featured command center with integrated browser and terminal - agents can code, browse web, and execute commands autonomously within the interface
-- 🔄 **Self-Evolution Focus**: Every component designed for continuous improvement through OpenEvolve watchdog, pattern detection, and EvoAgentX workflow optimization
-- 🧠 **Dynamic MCP**: Model Context Protocol with PRAR loop (Perceive-Reason-Act-Reflect) for advanced reasoning, branching decisions, and extensible tool integration
-- 👁️ **Human-in-the-Loop**: Takeover mode allows seamless transition between autonomous agent control and manual human intervention in both browser and terminal
-- 💾 **Knowledge Graph**: LightRAG + Neo4j automatically mirrors all code, conversations, and executions into a queryable semantic graph for agent learning
-- 🎨 **Midnight Glassmorphism**: Production-quality UI with real-time updates, numbered browser overlays (Rango-style), and visual state indicators
-- 💬 **Dual Protocol**: WebSocket for real-time streaming chat + JSON-RPC 2.0 for standardized agent-to-agent (A2A) communication
-- 📊 **Code Intelligence**: Automatic pattern detection, concept wiring, security analysis, and execution learning from every interaction
+- 🧠 **Self-Evolving**: Integrates with EvoAgentX for automatic workflow optimization
+- 💾 **Knowledge Graph**: LightRAG + Neo4j for persistent, queryable memory
+- 🎨 **Beautiful UI**: Midnight glassmorphism design with real-time updates
+- 🔄 **Dynamic Reasoning**: PRAR loop (Perceive-Reason-Act-Reflect) for advanced decision-making
+- 🌐 **Browser Automation**: ChromeDP with numbered overlays (Rango-style)
+- 💬 **Real-time Communication**: WebSocket + JSON-RPC 2.0 (A2A protocol)
+- 🧩 **MCP Integration**: Model Context Protocol for tool extensibility
+- 📊 **Code Mirroring**: Automatic Neo4j knowledge graph of your codebase
 
 ---
+
 ## ✨ Features
 
 ### 🎨 Frontend
@@ -128,7 +127,7 @@ The **Agentic Self-Evolving Command Center** is a production-ready AI agent work
 
 ### Prerequisites
 
-- **Go 1.25+**
+- **Go 1.21+**
 - **Node.js 18+**
 - **Neo4j 5.26 Community Edition**
 - **Ollama** with models:
