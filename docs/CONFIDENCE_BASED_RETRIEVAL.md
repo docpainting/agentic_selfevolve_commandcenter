@@ -297,6 +297,11 @@ type ArxivSearch struct {
     // Search academic papers for advanced topics
 }
 
+type YouTubeSearch struct {
+    // Search YouTube with transcript extraction
+    // CRITICAL for bleeding-edge content and expert explanations
+}
+
 func retrieveInformation(query RetrievalQuery) (*RetrievalResult, error) {
     results := &RetrievalResult{
         Query: query.Query,
@@ -324,6 +329,8 @@ func retrieveInformation(query RetrievalQuery) (*RetrievalResult, error) {
                 docs, err = stackOverflowSearch.Search(query.Query, query.MaxResults)
             case "docs":
                 docs, err = docsSearch.Search(query.Query, query.MaxResults)
+            case "youtube":
+                docs, err = youtubeSearch.SearchWithTranscripts(query.Query, query.MaxResults)
             }
             
             if err == nil {
@@ -742,6 +749,7 @@ retrieval:
     - github
     - stackoverflow
     - docs
+    - youtube  # NEW! Critical for bleeding-edge content
   
   max_results_per_source: 5
   max_total_results: 20
