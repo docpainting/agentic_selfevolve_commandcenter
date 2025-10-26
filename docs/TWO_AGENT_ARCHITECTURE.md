@@ -5,9 +5,24 @@
 The workspace uses a **two-agent architecture** designed for efficiency and specialization:
 
 1. **Main Agent** (Gemma 3 27B) - Orchestrator with self-awareness, evolution, and memory
-2. **Terminal Agent** (Specialized) - Natural language → Linux commands (250+ commands)
+2. **Terminal Agent** (Linux-Buster) - Natural language → Linux commands (250+ commands)
 
 Later, the main agent can **train new agents from scratch** using its accumulated memory and knowledge.
+
+---
+
+## Model Stack
+
+### Main Agent
+- **LLM**: `gemma3:27b` (27GB, multimodal, 8K context)
+- **Embeddings**: `nomic-embed-text:v1.5` (764MB, 8K context, 768 dimensions)
+- **Memory**: Neo4j + LightRAG + ChromeM (in-memory vector DB)
+
+### Terminal Agent
+- **LLM**: `comanderanch/Linux-Buster:latest` (~7GB, 250+ commands)
+- **Tools**: PTY manager, command validator, output parser
+
+**All models run locally via Ollama** - no API costs, full privacy, complete control.
 
 ---
 
@@ -17,9 +32,9 @@ Later, the main agent can **train new agents from scratch** using its accumulate
 - **Role**: Orchestrator, planner, self-aware entity
 - **Strengths**: Reasoning, planning, self-modification, learning
 - **Tools**: Browser, file operations, MCP servers (OpenEvolve, etc.)
-- **Memory**: Neo4j knowledge graph, LightRAG, short-term context
+- **Memory**: Neo4j knowledge graph, LightRAG semantic search, ChromeM vectors
 
-### Terminal Agent (Specialized)
+### Terminal Agent (Linux-Buster)
 - **Role**: Linux command execution specialist
 - **Strengths**: Natural language → precise Linux commands
 - **Training**: 250+ Linux commands, shell scripting, system administration
@@ -41,7 +56,12 @@ Later, the main agent can **train new agents from scratch** using its accumulate
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Main Agent (Gemma 3)                    │
+│                Main Agent (Gemma 3 27B)                     │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │  LLM: gemma3:27b (via Ollama)                      │    │
+│  │  Embeddings: nomic-embed-text:v1.5 (via Ollama)    │    │
+│  └────────────────────────────────────────────────────┘    │
+│                                                             │
 │  ┌────────────────────────────────────────────────────┐    │
 │  │  Core Capabilities:                                │    │
 │  │  - Self-awareness (Neo4j code mirror)              │    │
@@ -74,7 +94,12 @@ Later, the main agent can **train new agents from scratch** using its accumulate
                               │ A2A (JSON-RPC 2.0)
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                   Terminal Agent (Specialized)              │
+│          Terminal Agent (comanderanch/Linux-Buster)         │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │  LLM: comanderanch/Linux-Buster:latest             │    │
+│  │  (via Ollama)                                      │    │
+│  └────────────────────────────────────────────────────┘    │
+│                                                             │
 │  ┌────────────────────────────────────────────────────┐    │
 │  │  Core Capability:                                  │    │
 │  │  Natural Language → Linux Commands                 │    │
@@ -83,9 +108,11 @@ Later, the main agent can **train new agents from scratch** using its accumulate
 │  │  - 250+ Linux commands                             │    │
 │  │  - Shell scripting                                 │    │
 │  │  - System administration                           │    │
-│  │  - Package management                              │    │
-│  │  - Process management                              │    │
-│  │  - File operations                                 │    │
+│  │  - Package management (apt, dpkg, snap)            │    │
+│  │  - Process management (ps, systemctl, kill)        │    │
+│  │  - File operations (ls, cp, mv, find, grep)        │    │
+│  │  - Network tools (curl, wget, netstat)             │    │
+│  │  - Development tools (git, npm, pip, docker)       │    │
 │  └────────────────────────────────────────────────────┘    │
 │                                                             │
 │  ┌────────────────────────────────────────────────────┐    │
@@ -172,7 +199,7 @@ Main Agent (Gemma 3):
         context: {...}
     })
     ↓
-Terminal Agent:
+Terminal Agent (Linux-Buster):
     Interprets: "install and configure PostgreSQL"
     ↓
     Plans commands:
@@ -206,12 +233,14 @@ Main Agent (Gemma 3):
     })
     ↓
 OpenEvolve MCP Server:
-    Runs evolution
+    Uses Gemma 3 + nomic-embed-text for evolution
     ↓
     Returns: {best_code: "...", score: 88}
     ↓
 Main Agent:
     Stores in Neo4j
+    Creates embedding with nomic-embed-text
+    Stores in ChromeM for similarity search
     ↓
     Responds to user: "Code improved! Score: 88 (+61)"
 ```
@@ -230,7 +259,7 @@ Main Agent (Gemma 3):
     ↓
     Step 1: terminal_agent.execute("build frontend with npm")
     ↓
-Terminal Agent:
+Terminal Agent (Linux-Buster):
     cd frontend && npm run build
     ↓
     Returns: {success: true}
@@ -253,165 +282,124 @@ Terminal Agent:
     Returns: {success: true}
     ↓
 Main Agent:
-    Step 4: Store deployment in Neo4j
+    Step 4: Store deployment in Neo4j with embedding
     ↓
     Responds to user: "Deployed successfully! Coverage: 85%"
 ```
 
 ---
 
-## Tool Registration
+## Configuration
 
-### Main Agent Tools
+### Agent Configuration
 
-```go
-// backend/internal/agent/tools.go
-func (a *AgentController) RegisterTools() {
-    // Built-in tools
-    a.toolRegistry.RegisterBuiltin("browser_navigate", BrowserNavigateTool{...})
-    a.toolRegistry.RegisterBuiltin("file_read", FileReadTool{...})
-    a.toolRegistry.RegisterBuiltin("file_write", FileWriteTool{...})
+**File**: `config/agents.yaml`
+
+```yaml
+agents:
+  main:
+    id: main_agent
+    name: "Main Agent"
     
-    // MCP tools (auto-discovered)
-    a.mcpClient.ConnectAll()
+    llm:
+      model: gemma3:27b
+      api_base: http://localhost:11434/v1/
+      api_key: ollama
+      temperature: 0.7
+      max_tokens: 8192
     
-    // Terminal agent delegation
-    a.toolRegistry.RegisterBuiltin("terminal_agent.execute", TerminalAgentTool{
-        Description: "Execute terminal commands via specialized terminal agent",
-        Parameters: map[string]interface{}{
-            "type": "object",
-            "properties": map[string]interface{}{
-                "task": map[string]string{
-                    "type": "string",
-                    "description": "Natural language description of terminal task",
-                },
-                "context": map[string]string{
-                    "type": "object",
-                    "description": "Additional context (os, user, working_dir)",
-                },
-            },
-            "required": []string{"task"},
-        },
-        Execute: func(args map[string]interface{}) (interface{}, error) {
-            // Send A2A request to terminal agent
-            return a.a2aClient.Request("terminal_agent", "terminal.execute", args)
-        },
-    })
-}
+    embedding:
+      model: nomic-embed-text:v1.5
+      api_base: http://localhost:11434/v1/
+      dimension: 768
+    
+    memory:
+      lightrag:
+        enabled: true
+        config_file: config/lightrag.yaml
+      neo4j:
+        enabled: true
+        uri: bolt://localhost:7687
+      chromem:
+        enabled: true
+        dimension: 768
+    
+    tools:
+      builtin:
+        - browser_navigate
+        - browser_click
+        - file_read
+        - file_write
+      mcp:
+        - openevolve.*
+        - playwright.*
+      agents:
+        - terminal_agent.execute
+    
+    capabilities:
+      self_awareness: true
+      self_modification: true
+      pattern_learning: true
+      evolution: true
+  
+  terminal:
+    id: terminal_agent
+    name: "Terminal Agent"
+    
+    llm:
+      model: comanderanch/Linux-Buster:latest
+      api_base: http://localhost:11434/v1/
+      api_key: ollama
+      temperature: 0.3  # Lower for precise commands
+      max_tokens: 2048
+    
+    tools:
+      builtin:
+        - pty_execute
+        - validate_command
+        - parse_output
+    
+    a2a:
+      enabled: true
+      listen_port: 8081
+      methods:
+        - terminal.execute
+    
+    capabilities:
+      command_execution: true
+      safety_validation: true
 ```
 
-### Terminal Agent Tools
+### LightRAG Configuration
 
-```go
-// backend/cmd/terminal_agent/main.go
-func (t *TerminalAgent) RegisterTools() {
-    // Only has terminal-related tools
-    t.toolRegistry.RegisterBuiltin("pty_execute", PTYExecuteTool{...})
-    t.toolRegistry.RegisterBuiltin("validate_command", ValidateCommandTool{...})
-    t.toolRegistry.RegisterBuiltin("parse_output", ParseOutputTool{...})
-}
-```
+**File**: `config/lightrag.yaml`
 
----
+```yaml
+llm:
+  model: gemma3:27b
+  api_base: http://localhost:11434/v1/
+  api_key: ollama
+  temperature: 0.7
+  max_tokens: 8192
 
-## A2A Implementation
+embedding:
+  model: nomic-embed-text:v1.5
+  api_base: http://localhost:11434/v1/
+  dimension: 768
+  context_length: 8192
 
-### Main Agent Side
-
-```go
-// backend/internal/a2a/client.go
-type A2AClient struct {
-    agents map[string]*AgentConnection
-}
-
-func (c *A2AClient) Request(agentID, method string, params interface{}) (interface{}, error) {
-    conn := c.agents[agentID]
-    if conn == nil {
-        return nil, fmt.Errorf("agent not found: %s", agentID)
-    }
-    
-    request := JSONRPCRequest{
-        JSONRPC: "2.0",
-        Method:  method,
-        Params:  params,
-        ID:      generateID(),
-    }
-    
-    // Send via WebSocket or HTTP
-    response, err := conn.Send(request)
-    if err != nil {
-        return nil, err
-    }
-    
-    return response.Result, nil
-}
-```
-
-### Terminal Agent Side
-
-```go
-// backend/cmd/terminal_agent/server.go
-type TerminalAgentServer struct {
-    ptyManager      *PTYManager
-    commandParser   *CommandParser
-    llm             *LLM  // Specialized terminal LLM
-}
-
-func (s *TerminalAgentServer) HandleRequest(req JSONRPCRequest) JSONRPCResponse {
-    switch req.Method {
-    case "terminal.execute":
-        return s.executeTerminalTask(req.Params)
-    default:
-        return JSONRPCResponse{
-            JSONRPC: "2.0",
-            Error: &JSONRPCError{
-                Code:    -32601,
-                Message: "Method not found",
-            },
-            ID: req.ID,
-        }
-    }
-}
-
-func (s *TerminalAgentServer) executeTerminalTask(params map[string]interface{}) JSONRPCResponse {
-    task := params["task"].(string)
-    context := params["context"].(map[string]interface{})
-    
-    // 1. Use specialized LLM to convert natural language to commands
-    commands, err := s.llm.GenerateCommands(task, context)
-    if err != nil {
-        return errorResponse(err)
-    }
-    
-    // 2. Validate commands for safety
-    for _, cmd := range commands {
-        if !s.commandParser.IsSafe(cmd) {
-            return errorResponse(fmt.Errorf("unsafe command: %s", cmd))
-        }
-    }
-    
-    // 3. Execute commands via PTY
-    results := []CommandResult{}
-    for _, cmd := range commands {
-        result, err := s.ptyManager.Execute(cmd)
-        if err != nil {
-            return errorResponse(err)
-        }
-        results = append(results, result)
-    }
-    
-    // 4. Return results
-    return JSONRPCResponse{
-        JSONRPC: "2.0",
-        Result: map[string]interface{}{
-            "commands_executed": commands,
-            "output":           aggregateOutput(results),
-            "exit_code":        results[len(results)-1].ExitCode,
-            "success":          true,
-        },
-        ID: req.ID,
-    }
-}
+storage:
+  vector:
+    backend: chromem
+    dimension: 768
+  graph:
+    backend: neo4j
+    uri: bolt://localhost:7687
+    username: neo4j
+    password: ${NEO4J_PASSWORD}
+  kv:
+    backend: boltdb
+    path: data/lightrag.db
 ```
 
 ---
@@ -420,34 +408,42 @@ func (s *TerminalAgentServer) executeTerminalTask(params map[string]interface{})
 
 ### Main Agent Trains New Agent
 
+The main agent accumulates knowledge through:
+- **Neo4j**: Stores code patterns, successful solutions, learned best practices
+- **LightRAG**: Semantic search over past experiences
+- **ChromeM**: Vector similarity for finding related solutions
+- **Embeddings**: nomic-embed-text creates dense representations
+
+When training a new agent:
+
 ```
 Main Agent (after months of learning):
     ↓
     Has accumulated:
     - 10,000+ patterns in Neo4j
     - Successful code evolution history
-    - Learned best practices
+    - Learned best practices (via OpenEvolve)
     - Security knowledge
     - Performance optimizations
     ↓
     User: "Train a new API agent"
     ↓
 Main Agent:
-    1. Extract relevant patterns from Neo4j
-       (API design, authentication, rate limiting, etc.)
+    1. Query Neo4j for API-related patterns
+       (authentication, rate limiting, error handling)
     
-    2. Generate training data:
-       - Successful API implementations
-       - Common patterns and anti-patterns
-       - Security best practices
+    2. Use LightRAG to find similar successful implementations
     
-    3. Create specialized LLM fine-tuning dataset
+    3. Generate embeddings of best practices
     
-    4. Train new agent with focused knowledge
+    4. Create specialized training dataset
     
-    5. New "API Agent" born with:
+    5. Fine-tune new model or create specialized prompt
+    
+    6. New "API Agent" born with:
        - Dense API-specific knowledge
        - Patterns learned from main agent
+       - Embeddings of successful code
        - Specialized for API tasks
     ↓
 New API Agent:
@@ -457,128 +453,20 @@ New API Agent:
     - Reduces load on main agent
 ```
 
-### Training Process
-
-```go
-// backend/internal/agent/trainer.go
-type AgentTrainer struct {
-    mainAgent *AgentController
-    neo4j     *Neo4jClient
-}
-
-func (t *AgentTrainer) TrainNewAgent(spec AgentSpec) (*Agent, error) {
-    // 1. Extract relevant patterns from Neo4j
-    patterns := t.neo4j.QueryPatterns(spec.Domain)
-    
-    // 2. Generate training data
-    trainingData := t.generateTrainingData(patterns, spec)
-    
-    // 3. Create specialized LLM config
-    llmConfig := t.createLLMConfig(spec)
-    
-    // 4. Fine-tune or configure LLM
-    llm := t.fineTuneLLM(llmConfig, trainingData)
-    
-    // 5. Create new agent
-    newAgent := &Agent{
-        ID:          spec.ID,
-        Name:        spec.Name,
-        LLM:         llm,
-        Tools:       spec.Tools,
-        Memory:      t.createMemory(spec),
-        A2AClient:   t.createA2AClient(),
-    }
-    
-    // 6. Register with main agent
-    t.mainAgent.RegisterSubAgent(newAgent)
-    
-    return newAgent, nil
-}
-```
-
----
-
-## Benefits of This Architecture
-
-### 1. Cognitive Load Distribution
-- **Main agent**: High-level reasoning, planning, self-awareness
-- **Terminal agent**: Specialized Linux command execution
-- **Future agents**: Domain-specific tasks
-
-### 2. Specialization
-- Each agent is **expert** in its domain
-- Better performance than generalist
-- Faster, more accurate responses
-
-### 3. Scalability
-- Add new agents as needed
-- Each agent has its own tools
-- Communicate via A2A
-- Main agent orchestrates
-
-### 4. Knowledge Transfer
-- Main agent accumulates knowledge
-- Can train new agents from scratch
-- New agents inherit learned patterns
-- Continuous improvement
-
-### 5. Maintainability
-- Clear separation of concerns
-- Each agent is independent
-- Easy to debug and update
-- Modular architecture
-
----
-
-## Configuration
-
-### Agent Registry
-
-```yaml
-# config/agents.yaml
-agents:
-  main:
-    id: main_agent
-    llm:
-      model: gemma3:27b
-      api_base: http://localhost:11434/v1/
-    tools:
-      - browser_*
-      - file_*
-      - openevolve.*
-      - terminal_agent.execute
-    memory:
-      neo4j: true
-      lightrag: true
-    
-  terminal:
-    id: terminal_agent
-    llm:
-      model: terminal_specialist  # Specialized model
-      api_base: http://localhost:11434/v1/
-    tools:
-      - pty_execute
-      - validate_command
-      - parse_output
-    a2a:
-      listen_port: 8081
-      methods:
-        - terminal.execute
-```
-
 ---
 
 ## Summary
 
 ### Current Architecture (Two Agents)
 
-1. **Main Agent** (Gemma 3)
+1. **Main Agent** (Gemma 3 27B + nomic-embed-text v1.5)
    - Orchestrator with self-awareness
    - Uses browser, files, MCP tools
    - Delegates terminal work to terminal agent
-   - Stores knowledge in Neo4j
+   - Stores knowledge in Neo4j + LightRAG + ChromeM
+   - Creates embeddings for semantic search
 
-2. **Terminal Agent** (Specialized)
+2. **Terminal Agent** (comanderanch/Linux-Buster)
    - Natural language → Linux commands
    - 250+ commands trained
    - Reduces cognitive load on main agent
@@ -586,7 +474,7 @@ agents:
 
 ### Future Architecture (Multi-Agent)
 
-1. **Main Agent** - Orchestrator
+1. **Main Agent** - Orchestrator (trains others)
 2. **Terminal Agent** - Linux specialist
 3. **API Agent** - API design/implementation (trained by main agent)
 4. **Database Agent** - Database operations (trained by main agent)
@@ -595,12 +483,15 @@ agents:
 
 ### Key Points
 
+- ✅ **All models via Ollama**: No API costs, full privacy
+- ✅ **Specific models**: gemma3:27b, nomic-embed-text:v1.5, Linux-Buster
 - ✅ **Two agents now**: Main + Terminal
 - ✅ **A2A for communication**: JSON-RPC 2.0
 - ✅ **Each has own tools**: No overlap
 - ✅ **Terminal agent offloads work**: Reduces main agent cognitive load
+- ✅ **Embeddings for memory**: Semantic search via nomic-embed-text
 - ✅ **Future: Main agent trains new agents**: From accumulated knowledge
 - ✅ **Clean, scalable architecture**: Easy to add new agents
 
-This is a **much better architecture** than trying to do everything with one agent!
+This is a **production-ready architecture** with all models specified and configured!
 
