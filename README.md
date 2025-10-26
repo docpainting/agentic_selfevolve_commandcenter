@@ -32,8 +32,29 @@ The **Agentic Self-Evolving Command Center** is a production-ready AI agent work
 - 🎨 **Midnight Glassmorphism**: Production-quality UI with real-time updates, numbered browser overlays (Rango-style), and visual state indicators
 - 💬 **Dual Protocol**: WebSocket for real-time streaming chat + JSON-RPC 2.0 for standardized agent-to-agent (A2A) communication
 - 📊 **Code Intelligence**: Automatic pattern detection, concept wiring, security analysis, and execution learning from every interaction
+---
+
+## 🎨 Preview
+
+> **📸 Screenshots coming soon!** For now, start the dev server to see the beautiful midnight glassmorphism UI in action:
+> 
+> ```bash
+> cd frontend && npm run dev
+> # Open http://localhost:3000
+> ```
+
+**Visual Highlights:**
+- 🌙 Midnight blue gradient background with radial effects
+- ✨ Glass panels with 25% opacity and backdrop blur
+- 💎 Cyan (#15A7FF) accents for AI-driven elements
+- 🎨 Smooth animations and lens flare effects on active tabs
+- 📱 Responsive 3-panel layout (File Tree | Chat | OpenEvolve)
+- 🖥️ Integrated browser with numbered overlays (Rango-style)
+- 💻 Terminal with AI/User command attribution
+- 🔌 Real-time connection status indicators
 
 ---
+
 ## ✨ Features
 
 ### 🎨 Frontend
