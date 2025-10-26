@@ -522,3 +522,16 @@ If you find this project useful, please consider giving it a star! ⭐
 
 </div>
 
+
+### Browser Automation with Numbered Overlays
+
+![Browser with Numbered Overlays](assets/github_with_overlays.png)
+
+*Rango-style numbered overlays (cyan #15A7FF) over interactive elements - this is exactly how the agent sees and interacts with web pages. The agent can click elements by number: "CLICK 99" to sign up, "TYPE 100 'email@example.com'" to enter text.*
+
+**Test Results:**
+- ✅ 211 interactive elements detected
+- ✅ 43 visible overlays created
+- ✅ Perfect positioning and styling
+- ✅ Full browser automation working
+
