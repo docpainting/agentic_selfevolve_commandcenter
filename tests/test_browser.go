@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -64,39 +63,21 @@ func main() {
 
 	// Test 3: Find interactive elements
 	log.Println("\n🔍 Test 3: Find interactive elements")
-	var nodes []*chromedp.Node
+	var nodeCount int64
 	err = chromedp.Run(ctx,
-		chromedp.Nodes("a, button, input", &nodes, chromedp.ByQueryAll),
+		chromedp.Evaluate(`document.querySelectorAll('a, button, input').length`, &nodeCount),
 	)
 	if err != nil {
 		log.Fatal("❌ Failed to find elements:", err)
 	}
-	log.Printf("✅ Found %d interactive elements\n", len(nodes))
-
-	// Show first 10 elements
-	log.Println("\n📋 First 10 elements:")
-	for i, node := range nodes {
-		if i >= 10 {
-			break
-		}
-		text := node.AttributeValue("aria-label")
-		if text == "" {
-			text = node.NodeValue
-		}
-		if text == "" {
-			text = node.AttributeValue("placeholder")
-		}
-		log.Printf("  [%d] <%s> %s\n", i, node.NodeName, text)
-	}
+	log.Printf("✅ Found %d interactive elements\n", nodeCount)
 
 	// Test 4: Search functionality
 	log.Println("\n🔎 Test 4: Test search")
-	var searchResults string
 	err = chromedp.Run(ctx,
 		chromedp.Navigate("https://github.com/search?q=go-light-rag&type=repositories"),
 		chromedp.WaitReady("body"),
 		chromedp.Sleep(2*time.Second),
-		chromedp.Text("body", &searchResults, chromedp.ByQuery),
 	)
 	if err != nil {
 		log.Fatal("❌ Failed to search:", err)
