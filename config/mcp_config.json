@@ -1,0 +1,91 @@
+{
+  "mcpServers": {
+    "dynamic-thinking": {
+      "command": "python",
+      "args": [
+        "/home/ubuntu/agent-workspace/backend/mcp_servers/dynamic_thinking/server.py"
+      ],
+      "description": "Core self-awareness and deep reasoning",
+      "tools": [
+        "perceive",
+        "reason",
+        "act",
+        "reflect",
+        "query_memory",
+        "evolve_prompt"
+      ]
+    },
+    
+    "openevolve": {
+      "command": "python",
+      "args": [
+        "/home/ubuntu/agent-workspace/backend/mcp_servers/openevolve/server.py"
+      ],
+      "description": "Code evolution via reward-based learning",
+      "tools": [
+        "evolve_code",
+        "evaluate_code",
+        "get_evolution_status"
+      ]
+    },
+    
+    "terminal-agent": {
+      "command": "python",
+      "args": [
+        "/home/ubuntu/agent-workspace/backend/mcp_servers/terminal/server.py"
+      ],
+      "description": "Natural language to Linux commands",
+      "tools": [
+        "natural_to_command",
+        "execute_command",
+        "explain_command"
+      ]
+    },
+    
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-chrome-devtools"
+      ],
+      "description": "Browser automation and debugging",
+      "tools": [
+        "navigate",
+        "click",
+        "type",
+        "screenshot",
+        "execute_script",
+        "get_console_logs",
+        "get_network_logs"
+      ]
+    },
+    
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-playwright"
+      ],
+      "description": "Advanced browser automation",
+      "enabled": true
+    }
+  },
+  
+  "environment": {
+    "NEO4J_URI": "bolt://localhost:7687",
+    "NEO4J_USER": "neo4j",
+    "NEO4J_PASSWORD": "${NEO4J_PASSWORD}",
+    "OLLAMA_BASE_URL": "http://localhost:11434"
+  },
+  
+  "models": {
+    "main_agent": {
+      "llm": "gemma3:27b",
+      "embedding": "nomic-embed-text:v1.5"
+    },
+    "terminal_agent": {
+      "llm": "comanderanch/Linux-Buster:latest"
+    }
+  }
+}
+

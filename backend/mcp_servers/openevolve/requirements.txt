@@ -1,0 +1,9 @@
+# MCP Server
+mcp>=0.9.0
+
+# OpenEvolve (will integrate actual library)
+# openevolve>=0.1.0
+
+# Utilities
+python-dotenv>=1.0.0
+
