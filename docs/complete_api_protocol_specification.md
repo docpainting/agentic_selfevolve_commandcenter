@@ -83,7 +83,7 @@ Authentication: JWT token in query parameter or header
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "type": "user_command",
-  "timestamp": "2025-10-26T03:45:00.000Z",
+  "timestamp": "TIMESTAMP",
   "source": "user",
   "payload": {
     "command": "Create a login page with JWT authentication",
@@ -105,7 +105,7 @@ Authentication: JWT token in query parameter or header
 {
   "id": "660e8400-e29b-41d4-a716-446655440001",
   "type": "agent_action",
-  "timestamp": "2025-10-26T03:45:01.000Z",
+  "timestamp": "TIMESTAMP",
   "source": "agent",
   "payload": {
     "action_type": "reasoning",
@@ -132,7 +132,7 @@ Authentication: JWT token in query parameter or header
 {
   "id": "770e8400-e29b-41d4-a716-446655440002",
   "type": "agent_action",
-  "timestamp": "2025-10-26T03:45:02.000Z",
+  "timestamp": "TIMESTAMP",
   "source": "agent",
   "payload": {
     "action_type": "tool_call",
@@ -164,7 +164,7 @@ Authentication: JWT token in query parameter or header
 {
   "id": "880e8400-e29b-41d4-a716-446655440003",
   "type": "system_event",
-  "timestamp": "2025-10-26T03:45:03.000Z",
+  "timestamp": "TIMESTAMP",
   "source": "system",
   "payload": {
     "event": "file_modified",
@@ -188,7 +188,7 @@ Authentication: JWT token in query parameter or header
 {
   "id": "990e8400-e29b-41d4-a716-446655440004",
   "type": "watchdog_alert",
-  "timestamp": "2025-10-26T03:45:04.000Z",
+  "timestamp": "TIMESTAMP",
   "source": "watchdog",
   "payload": {
     "alert_type": "pattern_detected",
@@ -212,7 +212,7 @@ Authentication: JWT token in query parameter or header
 {
   "id": "aa0e8400-e29b-41d4-a716-446655440005",
   "type": "approval_request",
-  "timestamp": "2025-10-26T03:45:05.000Z",
+  "timestamp": "TIMESTAMP",
   "source": "agent",
   "payload": {
     "action": "file_edit",
@@ -239,7 +239,7 @@ Authentication: JWT token in query parameter or header
 {
   "id": "bb0e8400-e29b-41d4-a716-446655440006",
   "type": "tool_result",
-  "timestamp": "2025-10-26T03:45:06.000Z",
+  "timestamp": "TIMESTAMP",
   "source": "system",
   "payload": {
     "tool": "terminal_execute",
@@ -518,7 +518,7 @@ Response: {
   "content": "package auth...",
   "language": "go",
   "size": 1024,
-  "modified": "2025-10-26T03:45:00.000Z"
+  "modified": "TIMESTAMP"
 }
 
 PUT /api/files/content
@@ -694,7 +694,7 @@ Response: {
   "current_url": "https://github.com",
   "screenshot": "base64...",
   "elements": [...],
-  "timestamp": "2025-10-26T03:45:00.000Z"
+  "timestamp": "TIMESTAMP"
 }
 
 POST /api/vision/context

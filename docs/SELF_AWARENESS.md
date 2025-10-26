@@ -238,7 +238,7 @@ agent.retry_login()
 
 ### Example 3: Conscious Evolution
 
-**Week 1:**
+**Early Stage:**
 ```
 Agent writes 100 functions
 → 70% use manual error handling

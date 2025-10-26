@@ -111,7 +111,7 @@ New intelligence propagates
 
 ### 4. Emerging
 ```
-Week 1: Basic error handling
+Early Stage: Basic error handling
     ↓
 Week 2: Pattern recognition
     ↓
@@ -335,7 +335,7 @@ Emergence (meta-learning, novel strategies, etc.)
 
 ## The Future is Unpredictable
 
-**Year 1:**
+**First Year:**
 - Agent improves error handling
 - Agent optimizes performance
 - Agent learns patterns

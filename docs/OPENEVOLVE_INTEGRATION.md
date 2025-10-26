@@ -339,7 +339,7 @@ const [components, setComponents] = useState([
     status: 'approved',
     progress: 100,
     quality: 95,
-    lastUpdated: '2024-10-26T10:30:00Z'
+    lastUpdated: 'TIMESTAMP'
   },
   {
     id: '2',
@@ -347,7 +347,7 @@ const [components, setComponents] = useState([
     status: 'pending',
     progress: 75,
     quality: 82,
-    lastUpdated: '2024-10-26T11:15:00Z'
+    lastUpdated: 'TIMESTAMP'
   },
   {
     id: '3',
@@ -356,7 +356,7 @@ const [components, setComponents] = useState([
     progress: 60,
     quality: 78,
     alerts: 3,
-    lastUpdated: '2024-10-26T11:45:00Z'
+    lastUpdated: 'TIMESTAMP'
   }
 ]);
 
@@ -368,7 +368,7 @@ const [alerts, setAlerts] = useState([
     message: 'String concatenation in SQL query',
     file: 'backend/handlers/user.go',
     line: 45,
-    timestamp: '2024-10-26T11:50:00Z'
+    timestamp: 'TIMESTAMP'
   },
   {
     id: 'a2',
@@ -377,7 +377,7 @@ const [alerts, setAlerts] = useState([
     message: 'Function complexity: 18 (threshold: 10)',
     file: 'backend/agent/controller.go',
     line: 120,
-    timestamp: '2024-10-26T11:48:00Z'
+    timestamp: 'TIMESTAMP'
   }
 ]);
 ```
@@ -455,7 +455,7 @@ func (w *Watchdog) ApproveComponent(componentID string, approver string) error {
 
 **Example Evolution:**
 
-**Week 1:**
+**Early Stage:**
 ```
 Pattern: "Authentication"
 Confidence: 0.6

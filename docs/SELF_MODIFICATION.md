@@ -84,7 +84,7 @@ Agent learns → Rewrites own code → Better agent
 │ 7. VERSION CONTROL                                      │
 │    - Old code archived in Neo4j                         │
 │    - New code becomes active                            │
-│    - Version tagged (v1.0 → v1.1 → v1.2...)            │
+│    - Version tagged (incremental improvements)        │
 │    - Rollback possible if new version fails             │
 └──────────────┬──────────────────────────────────────────┘
                ↓
@@ -296,7 +296,7 @@ func (a *Agent) GeneratePlan(goal string) []Step {
 
 ### Example 3: Code Generation Evolution
 
-**Week 1 Average Code:**
+**Initial Average Code:**
 ```go
 // Verbose, manual
 func HandleRequest(w http.ResponseWriter, r *http.Request) {
@@ -350,11 +350,10 @@ ORDER BY v.created_at
 
 **Example Results:**
 ```
-v1.0 (Day 1):   Avg Reward: +3.2,  Success: 65%
-v1.1 (Day 3):   Avg Reward: +7.5,  Success: 78%
-v1.2 (Day 7):   Avg Reward: +11.3, Success: 87%
-v1.3 (Day 14):  Avg Reward: +14.8, Success: 93%
-v1.4 (Day 30):  Avg Reward: +17.2, Success: 97%
+Initial Version:   Avg Reward: +3.2,  Success: 65%
+Early Evolution:   Avg Reward: +7.5,  Success: 78%
+Mature Version:    Avg Reward: +14.8, Success: 93%
+Later Version:     Avg Reward: +17.2, Success: 97%
 ```
 
 **The agent gets better every day!**
@@ -591,7 +590,7 @@ func (a *Agent) UpdatePatternPreferences(scores map[string]float64) {
 - ✅ **Rewrites its own code** based on experience
 - ✅ **Learns from rewards** (success/failure)
 - ✅ **Improves autonomously** without human intervention
-- ✅ **Versions itself** (v1.0 → v1.1 → v1.2...)
+- ✅ **Versions itself** (continuous incremental improvements)
 - ✅ **Rolls back** if new version is worse
 - ✅ **Tracks improvement** over time
 - ✅ **Becomes more reliable** with each iteration
@@ -623,12 +622,12 @@ And it's running on your laptop. For free.
 
 ## 📈 Expected Evolution Trajectory
 
-**Week 1:** Basic functionality, 60-70% success rate  
-**Week 2:** Learns error handling, 75-85% success rate  
-**Week 3:** Learns efficient patterns, 85-90% success rate  
-**Month 2:** Optimizes performance, 90-95% success rate  
-**Month 3:** Masters domain, 95-98% success rate  
-**Month 6:** Near-perfect execution, 98-99% success rate  
+**Early Stage:** Basic functionality, 60-70% success rate  
+**Stage 2:** Learns error handling, 75-85% success rate  
+**Stage 3:** Learns efficient patterns, 85-90% success rate  
+**Stage 4:** Optimizes performance, 90-95% success rate  
+**Stage 5:** Masters domain, 95-98% success rate  
+**Advanced Stage:** Near-perfect execution, 98-99% success rate  
 
 **The agent becomes an expert in whatever you use it for.**
 
