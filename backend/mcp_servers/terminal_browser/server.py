@@ -17,6 +17,8 @@ from mcp import types
 import ollama
 import websockets
 import aiohttp
+from PIL import Image, ImageDraw, ImageFont
+import io
 
 # Configuration
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
@@ -99,7 +101,47 @@ class ChromeDevTools:
         await self.send_command("Page.loadEventFired")
         return result
     
-    async def screenshot(self, full_page: bool = False) -> bytes:
+    async def get_interactive_elements(self) -> list:
+        """Get all interactive elements with their positions"""
+        script = """
+        (() => {
+            const elements = [];
+            const selectors = [
+                'a', 'button', 'input', 'textarea', 'select',
+                '[onclick]', '[role="button"]', '[role="link"]',
+                '[tabindex]', '[contenteditable]'
+            ];
+            
+            selectors.forEach(selector => {
+                document.querySelectorAll(selector).forEach((el, idx) => {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.width > 0 && rect.height > 0) {
+                        elements.push({
+                            tag: el.tagName.toLowerCase(),
+                            type: el.type || null,
+                            text: el.innerText?.substring(0, 50) || el.value || el.placeholder || '',
+                            x: rect.left + rect.width / 2,
+                            y: rect.top + rect.height / 2,
+                            width: rect.width,
+                            height: rect.height,
+                            selector: `${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}${el.className ? '.' + el.className.split(' ')[0] : ''}`
+                        });
+                    }
+                });
+            });
+            
+            return elements;
+        })()
+        """;
+        
+        result = await self.send_command("Runtime.evaluate", {
+            "expression": script,
+            "returnByValue": True
+        })
+        
+        return result['result'].get('value', [])
+    
+    async def screenshot(self, full_page: bool = False, with_overlays: bool = False) -> tuple:
         """Take screenshot"""
         if full_page:
             # Get content size
@@ -117,7 +159,17 @@ class ChromeDevTools:
         
         result = await self.send_command("Page.captureScreenshot")
         screenshot_b64 = result['result']['data']
-        return base64.b64decode(screenshot_b64)
+        screenshot_bytes = base64.b64decode(screenshot_b64)
+        
+        elements = []
+        if with_overlays:
+            # Get interactive elements
+            elements = await self.get_interactive_elements()
+            
+            # Add numbered overlays
+            screenshot_bytes = self._add_overlays(screenshot_bytes, elements)
+        
+        return screenshot_bytes, elements
     
     async def get_dom(self) -> dict:
         """Get DOM tree"""
@@ -239,6 +291,50 @@ class ChromeDevTools:
         
         return network_events
     
+    def _add_overlays(self, screenshot_bytes: bytes, elements: list) -> bytes:
+        """Add numbered overlays to screenshot"""
+        # Load image
+        image = Image.open(io.BytesIO(screenshot_bytes))
+        draw = ImageDraw.Draw(image, 'RGBA')
+        
+        # Try to load a font, fallback to default
+        try:
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)
+        except:
+            font = ImageFont.load_default()
+        
+        # Draw numbered circles on each element
+        for idx, el in enumerate(elements, 1):
+            x, y = int(el['x']), int(el['y'])
+            
+            # Draw blue circle
+            radius = 15
+            draw.ellipse(
+                [(x - radius, y - radius), (x + radius, y + radius)],
+                fill=(0, 123, 255, 200),  # Blue with transparency
+                outline=(255, 255, 255, 255),  # White border
+                width=2
+            )
+            
+            # Draw number
+            text = str(idx)
+            # Get text bounding box for centering
+            bbox = draw.textbbox((0, 0), text, font=font)
+            text_width = bbox[2] - bbox[0]
+            text_height = bbox[3] - bbox[1]
+            
+            draw.text(
+                (x - text_width // 2, y - text_height // 2),
+                text,
+                fill=(255, 255, 255, 255),  # White text
+                font=font
+            )
+        
+        # Convert back to bytes
+        output = io.BytesIO()
+        image.save(output, format='PNG')
+        return output.getvalue()
+    
     async def close(self):
         """Close connection"""
         if self.ws:
@@ -255,6 +351,7 @@ class TerminalBrowserServer:
     def __init__(self):
         self.server = Server("terminal-browser")
         self.cdp: Optional[ChromeDevTools] = None
+        self.last_elements = []  # Store elements from last screenshot
         
         # Register tools
         self._register_tools()
@@ -338,7 +435,7 @@ class TerminalBrowserServer:
                 ),
                 types.Tool(
                     name="browser_screenshot",
-                    description="Take screenshot and optionally analyze with Gemma 3 vision",
+                    description="Take screenshot with numbered overlays on interactive elements. Gemma 3 can reference elements by number.",
                     inputSchema={
                         "type": "object",
                         "properties": {
@@ -353,6 +450,10 @@ class TerminalBrowserServer:
                             "full_page": {
                                 "type": "boolean",
                                 "description": "Capture full page (default: false)"
+                            },
+                            "with_overlays": {
+                                "type": "boolean",
+                                "description": "Add numbered overlays to interactive elements (default: true)"
                             }
                         }
                     }
@@ -367,13 +468,13 @@ class TerminalBrowserServer:
                 ),
                 types.Tool(
                     name="browser_click",
-                    description="Click element on page via Chrome DevTools",
+                    description="Click element on page. Use element number from screenshot or CSS selector.",
                     inputSchema={
                         "type": "object",
                         "properties": {
                             "selector": {
                                 "type": "string",
-                                "description": "CSS selector"
+                                "description": "CSS selector or element number (e.g., 'element:7')"
                             }
                         },
                         "required": ["selector"]
@@ -381,13 +482,13 @@ class TerminalBrowserServer:
                 ),
                 types.Tool(
                     name="browser_type",
-                    description="Type text into input field via Chrome DevTools",
+                    description="Type text into input field. Use element number from screenshot or CSS selector.",
                     inputSchema={
                         "type": "object",
                         "properties": {
                             "selector": {
                                 "type": "string",
-                                "description": "CSS selector for input field"
+                                "description": "CSS selector or element number (e.g., 'element:7')"
                             },
                             "text": {
                                 "type": "string",
@@ -463,7 +564,8 @@ class TerminalBrowserServer:
                 result = await self.browser_screenshot(
                     arguments.get("analyze", False),
                     arguments.get("question"),
-                    arguments.get("full_page", False)
+                    arguments.get("full_page", False),
+                    arguments.get("with_overlays", True)
                 )
             elif name == "browser_get_dom":
                 result = await self.browser_get_dom()
@@ -610,13 +712,16 @@ class TerminalBrowserServer:
                 "error": str(e)
             }
     
-    async def browser_screenshot(self, analyze: bool = False, question: Optional[str] = None, full_page: bool = False) -> dict:
+    async def browser_screenshot(self, analyze: bool = False, question: Optional[str] = None, full_page: bool = False, with_overlays: bool = True) -> dict:
         """Take screenshot and optionally analyze with Gemma 3 vision"""
         await self._ensure_cdp()
         
         try:
-            # Take screenshot
-            screenshot_bytes = await self.cdp.screenshot(full_page=full_page)
+            # Take screenshot with optional overlays
+            screenshot_bytes, elements = await self.cdp.screenshot(full_page=full_page, with_overlays=with_overlays)
+            
+            # Store elements for later reference
+            self.last_elements = elements
             
             # Save screenshot
             screenshot_path = "/tmp/browser_screenshot.png"
@@ -625,7 +730,17 @@ class TerminalBrowserServer:
             
             result = {
                 "success": True,
-                "screenshot_path": screenshot_path
+                "screenshot_path": screenshot_path,
+                "elements": [
+                    {
+                        "number": idx,
+                        "tag": el['tag'],
+                        "type": el.get('type'),
+                        "text": el['text'],
+                        "selector": el['selector']
+                    }
+                    for idx, el in enumerate(elements, 1)
+                ] if with_overlays else []
             }
             
             # Analyze with Gemma 3 vision if requested
@@ -672,13 +787,51 @@ class TerminalBrowserServer:
             }
     
     async def browser_click(self, selector: str) -> dict:
-        """Click element"""
+        """Click element by selector or element number"""
         await self._ensure_cdp()
+        
+        # Check if selector is element number (e.g., "element:7")
+        if selector.startswith("element:"):
+            try:
+                element_num = int(selector.split(":")[1])
+                if hasattr(self, 'last_elements') and 0 < element_num <= len(self.last_elements):
+                    element = self.last_elements[element_num - 1]
+                    selector = element['selector']
+                else:
+                    return {
+                        "success": False,
+                        "error": f"Element number {element_num} not found. Take a screenshot first."
+                    }
+            except (ValueError, IndexError):
+                return {
+                    "success": False,
+                    "error": f"Invalid element number format: {selector}"
+                }
+        
         return await self.cdp.click(selector)
     
     async def browser_type(self, selector: str, text: str) -> dict:
-        """Type text into input"""
+        """Type text into input by selector or element number"""
         await self._ensure_cdp()
+        
+        # Check if selector is element number (e.g., "element:7")
+        if selector.startswith("element:"):
+            try:
+                element_num = int(selector.split(":")[1])
+                if hasattr(self, 'last_elements') and 0 < element_num <= len(self.last_elements):
+                    element = self.last_elements[element_num - 1]
+                    selector = element['selector']
+                else:
+                    return {
+                        "success": False,
+                        "error": f"Element number {element_num} not found. Take a screenshot first."
+                    }
+            except (ValueError, IndexError):
+                return {
+                    "success": False,
+                    "error": f"Invalid element number format: {selector}"
+                }
+        
         return await self.cdp.type_text(selector, text)
     
     async def browser_execute_script(self, script: str) -> dict:
