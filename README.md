@@ -36,12 +36,13 @@ The **Agentic Self-Evolving Command Center** is a production-ready AI agent work
 
 ## 🎨 Preview
 
-> **📸 Screenshots coming soon!** For now, start the dev server to see the beautiful midnight glassmorphism UI in action:
-> 
-> ```bash
-> cd frontend && npm run dev
-> # Open http://localhost:3000
-> ```
+<div align="center">
+
+![Agentic Self-Evolving Command Center](assets/preview.webp)
+
+*The complete IDE/GUI command center with midnight glassmorphism design*
+
+</div>
 
 **Visual Highlights:**
 - 🌙 Midnight blue gradient background with radial effects
