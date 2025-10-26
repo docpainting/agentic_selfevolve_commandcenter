@@ -1,0 +1,195 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-white/10;
+  }
+  
+  body {
+    @apply bg-midnight-950 text-white font-sans antialiased;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(99, 119, 240, 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(21, 167, 255, 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(99, 119, 240, 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(21, 167, 255, 0.15) 0px, transparent 50%);
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-midnight-900/50;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-white/20 rounded-full hover:bg-white/30;
+  }
+}
+
+@layer components {
+  /* Glass Panel */
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-glass;
+  }
+
+  .glass-panel-hover {
+    @apply glass-panel hover:bg-white/10 hover:border-white/20 transition-all duration-300;
+  }
+
+  /* Cyan Glow Effects */
+  .cyan-glow {
+    @apply shadow-cyan-glow;
+  }
+
+  .lens-flare {
+    @apply shadow-lens-flare;
+  }
+
+  /* Button Styles */
+  .btn-glass {
+    @apply glass-panel px-4 py-2 rounded-lg font-medium transition-all duration-300;
+    @apply hover:bg-white/10 hover:scale-105 active:scale-95;
+  }
+
+  .btn-cyan {
+    @apply bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium;
+    @apply transition-all duration-300 hover:scale-105 active:scale-95 cyan-glow;
+  }
+
+  /* Input Styles */
+  .input-glass {
+    @apply glass-panel px-4 py-2 rounded-lg outline-none;
+    @apply focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 transition-all;
+  }
+
+  /* Card Styles */
+  .card-glass {
+    @apply glass-panel rounded-xl p-4;
+  }
+
+  /* Tab Styles */
+  .tab-inactive {
+    @apply px-4 py-2 text-white/60 hover:text-white/80 transition-colors cursor-pointer;
+  }
+
+  .tab-active {
+    @apply px-4 py-2 text-cyan-500 border-b-2 border-cyan-500 lens-flare cursor-pointer;
+  }
+
+  /* Message Bubble */
+  .message-user {
+    @apply glass-panel rounded-2xl rounded-br-sm px-4 py-3 ml-auto max-w-[70%];
+    @apply border-cyan-500/30 bg-cyan-500/10;
+  }
+
+  .message-agent {
+    @apply glass-panel rounded-2xl rounded-bl-sm px-4 py-3 mr-auto max-w-[70%];
+  }
+
+  /* File Tree Item */
+  .file-tree-item {
+    @apply flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer;
+    @apply hover:bg-white/10 transition-colors;
+  }
+
+  .file-tree-item-selected {
+    @apply file-tree-item bg-cyan-500/20 border-l-2 border-cyan-500;
+  }
+
+  /* Terminal Output */
+  .terminal-output {
+    @apply font-mono text-sm text-white/90 whitespace-pre-wrap;
+  }
+
+  .terminal-command-ai {
+    @apply inline-block glass-panel px-2 py-1 rounded text-cyan-500 font-mono text-sm;
+  }
+
+  .terminal-command-user {
+    @apply inline-block glass-panel px-2 py-1 rounded text-white font-mono text-sm;
+  }
+
+  /* Browser Element Overlay */
+  .browser-element-overlay {
+    @apply absolute border-2 border-cyan-500 bg-cyan-500/10 rounded;
+    @apply flex items-center justify-center text-cyan-500 font-bold text-sm;
+    @apply animate-pulse-slow;
+  }
+
+  /* Status Indicators */
+  .status-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+
+  .status-connected {
+    @apply status-dot bg-green-500 animate-glow;
+  }
+
+  .status-disconnected {
+    @apply status-dot bg-red-500;
+  }
+
+  .status-working {
+    @apply status-dot bg-cyan-500 animate-pulse;
+  }
+
+  /* Watchdog Alert */
+  .watchdog-alert {
+    @apply glass-panel rounded-lg p-3 border-l-4;
+  }
+
+  .watchdog-alert-info {
+    @apply watchdog-alert border-cyan-500;
+  }
+
+  .watchdog-alert-warning {
+    @apply watchdog-alert border-yellow-500;
+  }
+
+  .watchdog-alert-error {
+    @apply watchdog-alert border-red-500;
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    @apply w-full h-2 glass-panel rounded-full overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full bg-gradient-to-r from-cyan-500 to-cyan-600 rounded-full;
+    @apply transition-all duration-500 ease-out;
+  }
+
+  /* Takeover Button */
+  .takeover-button {
+    @apply btn-glass text-xs;
+  }
+
+  .takeover-button-active {
+    @apply takeover-button border-cyan-500 text-cyan-500 lens-flare;
+  }
+
+  /* Loading Spinner */
+  .spinner {
+    @apply w-5 h-5 border-2 border-white/20 border-t-cyan-500 rounded-full animate-spin;
+  }
+}
+
+@layer utilities {
+  .text-gradient-cyan {
+    @apply bg-gradient-to-r from-cyan-400 to-cyan-600 bg-clip-text text-transparent;
+  }
+
+  .perspective-3d {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+  }
+
+  .rotate-3d {
+    transform: rotateX(5deg) rotateY(-5deg);
+  }
+}
+

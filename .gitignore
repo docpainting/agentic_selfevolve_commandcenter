@@ -1,0 +1,80 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Backend
+backend/agent-workspace
+backend/logs/
+backend/data/
+backend/*.db
+backend/tmp/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/.env.local
+
+# MCP Server
+mcp-dynamic-thinking/mcp-dynamic-thinking
+mcp-dynamic-thinking/data/
+mcp-dynamic-thinking/*.db
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+vendor/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Screenshots
+screenshots/
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Build artifacts
+dist/
+build/
+out/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
