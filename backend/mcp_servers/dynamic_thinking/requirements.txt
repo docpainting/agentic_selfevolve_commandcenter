@@ -1,0 +1,27 @@
+# MCP Server
+mcp>=0.9.0
+
+# LightRAG (Go implementation - will use via subprocess or direct integration)
+# Note: Using go-light-rag from Go side, Python just orchestrates
+
+# LLM and Embeddings
+ollama-python>=0.1.0
+
+# Neo4j
+neo4j>=5.14.0
+
+# Vector DB
+chromadb>=0.4.0
+
+# Key-Value Store (using BoltDB via Go, or Redis)
+redis>=5.0.0
+
+# Web Search and Retrieval
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+youtube-transcript-api>=0.6.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+
