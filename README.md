@@ -466,6 +466,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgements
 
+- **[OpenEvolve](https://github.com/openevolve)** - Self-evolving code framework with watchdog and pattern detection
 - **[EvoAgentX](https://github.com/EvoAgentX/EvoAgentX)** - Self-evolving agent framework
 - **[LightRAG](https://github.com/MegaGrindStone/go-light-rag)** - Knowledge graph and RAG
 - **[Ollama](https://ollama.ai/)** - Local LLM inference
